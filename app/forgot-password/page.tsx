@@ -1,52 +1,105 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+"use client";
 
-export async function POST(request: Request) {
-  try {
-    const { email, password } =
-      await request.json();
+import { useState } from "react";
 
-    const user =
-      await prisma.user.findUnique({
-        where: { email },
-      });
+export default function ForgotPasswordPage() {
 
-    if (!user) {
-      return NextResponse.json(
-        {
-          error: "User not found",
-        },
-        {
-          status: 404,
-        }
-      );
+  const [email, setEmail] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [confirmPassword,
+    setConfirmPassword] =
+    useState("");
+
+  async function resetPassword() {
+
+    if (password !== confirmPassword) {
+      alert("兩次密碼不一致");
+      return;
     }
 
-    const hashedPassword =
-      await bcrypt.hash(password, 10);
-
-    await prisma.user.update({
-      where: {
-        email,
-      },
-      data: {
-        password: hashedPassword,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-    });
-
-  } catch (error) {
-    return NextResponse.json(
+    const res = await fetch(
+      "/api/forgot-password",
       {
-        error: String(error),
-      },
-      {
-        status: 500,
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       }
     );
+
+    const data = await res.json();
+
+    if (data.success) {
+
+      alert("密碼重設成功");
+
+      window.location.href =
+        "/login";
+
+    } else {
+
+      alert(data.error);
+
+    }
   }
+
+  return (
+    <div className="min-h-screen bg-black flex justify-center items-center">
+
+      <div className="bg-zinc-900 p-10 rounded-xl w-[450px]">
+
+        <h1 className="text-3xl font-bold mb-8">
+          忘記密碼
+        </h1>
+
+        <input
+          className="w-full bg-zinc-800 p-4 rounded mb-4"
+          placeholder="Email"
+          value={email}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
+        />
+
+        <input
+          type="password"
+          className="w-full bg-zinc-800 p-4 rounded mb-4"
+          placeholder="新密碼"
+          value={password}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
+        />
+
+        <input
+          type="password"
+          className="w-full bg-zinc-800 p-4 rounded mb-4"
+          placeholder="確認新密碼"
+          value={confirmPassword}
+          onChange={(e) =>
+            setConfirmPassword(
+              e.target.value
+            )
+          }
+        />
+
+        <button
+          onClick={resetPassword}
+          className="w-full bg-blue-600 p-4 rounded"
+        >
+          重設密碼
+        </button>
+
+      </div>
+    </div>
+  );
 }
