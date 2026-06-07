@@ -99,6 +99,15 @@ export default function ForgotPasswordPage() {
           重設密碼
         </button>
 
+        <p className="mt-4 text-center">
+        <a
+            href="/login"
+            className="text-blue-500 hover:underline"
+        >
+            返回登入
+        </a>
+        </p>
+
       </div>
     </div>
   );
