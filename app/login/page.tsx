@@ -71,6 +71,14 @@ export default function LoginPage() {
         >
           登入
         </button>
+        <p className="mt-2 text-center">
+          <a
+            href="/forgot-password"
+            className="text-gray-400 hover:text-white"
+          >
+            忘記密碼？
+          </a>
+        </p>
           <p className="mt-4 text-center">
             還沒有帳號？
 
