@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -61,6 +62,16 @@ export default function RegisterPage() {
         >
           註冊
         </button>
+          <p className="mt-4 text-center">
+          已經有帳號？
+
+          <Link
+            href="/login"
+            className="ml-1 text-blue-500 hover:underline"
+          >
+            返回登入
+          </Link>
+        </p>
       </div>
     </main>
   );
