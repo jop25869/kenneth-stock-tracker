@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useState } from "react";
+import Link from "next/link";
 
 
 export default function LoginPage() {
@@ -70,6 +71,17 @@ export default function LoginPage() {
         >
           登入
         </button>
+          <p className="mt-4 text-center">
+            還沒有帳號？
+
+            <Link
+              href="/register"
+              className="ml-1 text-blue-500 hover:underline"
+            >
+              立即註冊
+            </Link>
+          </p>
+        
       </div>
     </div>
   );
