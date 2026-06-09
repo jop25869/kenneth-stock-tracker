@@ -35,6 +35,10 @@ export default function Home() {
   const [stocks, setStocks] =
   useState<Stock[]>([]);
 
+  // 即時股價載入完成
+  const [pricesLoaded, setPricesLoaded] =
+  useState(false);
+
   // 新增股票輸入框
   const [symbol, setSymbol] = useState("");
   const [shares, setShares] = useState("");
@@ -216,24 +220,41 @@ const saveEdit = async () => {
      localStorage
   ========================= */
 
-  //防止未登入直接進入首頁
   useEffect(() => {
-  const token =
-    localStorage.getItem("token");
+  const init = async () => {
+    const token =
+      localStorage.getItem("token");
 
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
 
-  const decoded =
-    jwtDecode<TokenPayload>(token);
+    const decoded =
+      jwtDecode<TokenPayload>(token);
 
-  setUserEmail(decoded.email);
+    setUserEmail(decoded.email);
 
-  loadStocks();
+    await loadStocks();
+
+    
+  };
+
+    init();
   }, []);
   
+  useEffect(() => {
+    const updatePrices = async () => {
+      if (stocks.length === 0) return;
+
+      await refreshPrices();
+
+      setPricesLoaded(true);
+    };
+
+    updatePrices();
+  }, [stocks.length]);
+
   const loadStocks = async () => {
   const token =
     localStorage.getItem("token");
@@ -346,6 +367,16 @@ const saveEdit = async () => {
     (b.currentPrice - b.cost) * b.shares
   )[0];
   
+  if (!pricesLoaded) {
+  return (
+    <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+      <div className="text-2xl font-bold">
+        📈 正在更新即時股價...
+      </div>
+    </main>
+    );
+  }
+
   /* =========================
      JSX 畫面
   ========================= */
@@ -475,7 +506,7 @@ const saveEdit = async () => {
           </div>
 
           <div className="text-2xl font-bold text-green-400">
-            ${totalGain.toFixed(2)}
+              ${formatMoney(totalGain)}
           </div>
         </div>
 
@@ -485,7 +516,7 @@ const saveEdit = async () => {
           </div>
 
           <div className="text-2xl font-bold text-red-400">
-            ${totalLoss.toFixed(2)}
+            ${formatMoney(totalLoss)}
           </div>
         </div>
 

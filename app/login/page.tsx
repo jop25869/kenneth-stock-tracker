@@ -17,6 +17,7 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] =useState(false);
 
   async function login() {
     const res = await fetch("/api/login", {
@@ -33,11 +34,13 @@ export default function LoginPage() {
     const data = await res.json();
 
     if (data.token) {
-      localStorage.setItem("token", data.token);
+    setIsLoading(true);
 
-      alert("登入成功");
+    localStorage.setItem("token", data.token);
 
+    setTimeout(() => {
       window.location.href = "/";
+    }, 1000);
     } else {
       alert(data.error);
     }
@@ -65,11 +68,22 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        {isLoading && (
+          <div className="mb-4 text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+
+            <div className="mt-2 text-blue-400">
+              📈 載入投資組合中...
+            </div>
+          </div>
+        )}
+
         <button
           onClick={login}
-          className="w-full bg-blue-600 p-4 rounded"
+          disabled={isLoading}
+          className="w-full bg-blue-600 p-4 rounded disabled:opacity-50"
         >
-          登入
+          {isLoading ? "登入中..." : "登入"}
         </button>
         <p className="mt-2 text-center">
           <a
