@@ -22,7 +22,6 @@ model Stock {
   name         String?
 
   market       String @default("US")
-  name?: string;
   shares       Float
   cost         Float
   currentPrice Float
