@@ -218,27 +218,20 @@ const saveEdit = async () => {
 
   //防止未登入直接進入首頁
   useEffect(() => {
-  const init = async () => {
-    const token =
-      localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token");
 
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
+  if (!token) {
+    window.location.href = "/login";
+    return;
+  }
 
-    const decoded =
-      jwtDecode<TokenPayload>(token);
+  const decoded =
+    jwtDecode<TokenPayload>(token);
 
-    setUserEmail(decoded.email);
+  setUserEmail(decoded.email);
 
-    await loadStocks();
-
-    // 載入完立即更新股價
-    await refreshPrices();
-  };
-
-  init();
+  loadStocks();
   }, []);
   
   const loadStocks = async () => {
