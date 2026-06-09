@@ -15,6 +15,7 @@ import {
 ========================= */
 type Stock = {
   symbol: string;
+  market: string;
   shares: number;
   cost: number;
   currentPrice: number;
@@ -32,12 +33,10 @@ export default function Home() {
   ========================= */
 
   // 股票清單
-  const [stocks, setStocks] =
-  useState<Stock[]>([]);
+  const [stocks, setStocks] = useState<Stock[]>([]);
 
   // 即時股價載入完成
-  const [pricesLoaded, setPricesLoaded] =
-  useState(false);
+  const [pricesLoaded, setPricesLoaded] = useState(false);
 
   // 新增股票輸入框
   const [symbol, setSymbol] = useState("");
@@ -55,6 +54,9 @@ export default function Home() {
   //顯示目前登入帳號
   const [userEmail, setUserEmail] =useState("");
 
+  //台股美股切換
+  const [market, setMarket] = useState("US");
+
   /* =========================
      工具函式
   ========================= */
@@ -66,6 +68,7 @@ export default function Home() {
       maximumFractionDigits: 2,
     });
 
+    
   /* =========================
      功能區
   ========================= */
@@ -101,6 +104,7 @@ export default function Home() {
       },
       body: JSON.stringify({
         symbol: symbol.toUpperCase(),
+        market,
         shares: Number(shares),
         cost: Number(cost),
         currentPrice: data.price,
@@ -277,12 +281,16 @@ const saveEdit = async () => {
      Dashboard 計算
   ========================= */
 
-  const totalCost = stocks.reduce(
+const filteredStocks = stocks.filter(
+  (stock) => stock.market === market
+);
+
+  const totalCost = filteredStocks.reduce(
     (sum, stock) => sum + stock.cost * stock.shares,
     0
   );
 
-  const totalValue = stocks.reduce(
+  const totalValue = filteredStocks.reduce(
     (sum, stock) =>
       sum + stock.currentPrice * stock.shares,
     0
@@ -291,7 +299,7 @@ const saveEdit = async () => {
   const totalProfit = totalValue - totalCost;
 
   //正負損益計算
-  const totalGain = stocks.reduce(
+  const totalGain = filteredStocks.reduce(
   (sum, stock) => {
     const profit =
       (stock.currentPrice - stock.cost) *
@@ -304,7 +312,7 @@ const saveEdit = async () => {
   0
   );
 
-  const totalLoss = stocks.reduce(
+  const totalLoss = filteredStocks.reduce(
     (sum, stock) => {
       const profit =
         (stock.currentPrice - stock.cost) *
@@ -323,11 +331,14 @@ const saveEdit = async () => {
       : 0;
 
   //圓餅圖
-  const pieData = stocks.map((stock) => ({
-  name: stock.symbol,
-  value: stock.currentPrice * stock.shares,
-  }));
+  
 
+  const pieData = filteredStocks.map(
+  (stock) => ({
+    name: stock.symbol,
+    value: stock.currentPrice * stock.shares,
+  })
+);
   const COLORS = [
   "#22c55e", // 綠
   "#3b82f6", // 藍
@@ -354,14 +365,14 @@ const saveEdit = async () => {
 ];
 
   //最佳持股
-  const bestStock = [...stocks].sort(
+  const bestStock = [...filteredStocks].sort(
   (a, b) =>
     (b.currentPrice - b.cost) * b.shares -
     (a.currentPrice - a.cost) * a.shares
   )[0];
 
   //最差持股
-  const worstStock = [...stocks].sort(
+  const worstStock = [...filteredStocks].sort(
   (a, b) =>
     (a.currentPrice - a.cost) * a.shares -
     (b.currentPrice - b.cost) * b.shares
@@ -384,7 +395,44 @@ const saveEdit = async () => {
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-10">
 
-      <div className="flex justify-end items-center gap-4 mb-4">
+      <div className="flex items-center mb-8">
+
+      {/* 左邊 Logo */}
+      <h1 className="text-5xl font-bold">
+        📈 Stock Tracker
+      </h1>
+
+      {/* 中間切換 */}
+      <div className="flex-1 flex justify-center">
+        <div className="flex bg-zinc-800 rounded-xl p-1 gap-1">
+
+          <button
+            onClick={() => setMarket("US")}
+            className={`px-6 py-2 rounded-lg ${
+              market === "US"
+                ? "bg-blue-600 text-white"
+                : "hover:bg-zinc-700"
+            }`}
+          >
+            🇺🇸 美股
+          </button>
+
+          <button
+            onClick={() => setMarket("TW")}
+            className={`px-6 py-2 rounded-lg ${
+              market === "TW"
+                ? "bg-blue-600 text-white"
+                : "hover:bg-zinc-700"
+            }`}
+          >
+            🇹🇼 台股
+          </button>
+
+        </div>
+      </div>
+
+      {/* 右邊帳號 */}
+      <div className="flex items-center gap-4">
         <span className="text-zinc-400">
           👤 {userEmail}
         </span>
@@ -397,9 +445,9 @@ const saveEdit = async () => {
         </button>
       </div>
 
-      <h1 className="text-5xl font-bold mb-8">
-        📈 Stock Tracker
-      </h1>
+    </div>
+
+      
 
       {/* =========================
           新增持股
@@ -577,7 +625,7 @@ const saveEdit = async () => {
           </thead>
 
           <tbody>
-            {stocks.map((stock) => {
+            {filteredStocks.map((stock) => {
               const profit =
                 (stock.currentPrice - stock.cost) *
                 stock.shares;

@@ -20,9 +20,11 @@ model Stock {
   id           Int     @id @default(autoincrement())
 
   symbol       String
+  market String @default("US")
   shares       Float
   cost         Float
   currentPrice Float
+  
 
   userId       Int
   user         User    @relation(fields: [userId], references: [id])
