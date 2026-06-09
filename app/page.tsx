@@ -14,7 +14,11 @@ import {
    股票資料型別
 ========================= */
 type Stock = {
+  id: number;
+
   symbol: string;
+  name?: string;
+
   market: string;
   shares: number;
   cost: number;
