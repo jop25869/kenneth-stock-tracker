@@ -40,6 +40,8 @@ export default function Home() {
 
   // 新增股票輸入框
   const [symbol, setSymbol] = useState("");
+  const [selectedStock, setSelectedStock] = useState<any>(null);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [shares, setShares] = useState("");
   const [cost, setCost] = useState("");
 
@@ -74,15 +76,40 @@ export default function Home() {
   ========================= */
 
   // 新增股票
+const searchStocks = async (
+    keyword: string
+  ) => {
+    if (!keyword) {
+      setSearchResults([]);
+      return;
+    }
+
+    const response = await fetch(
+      `/api/stocks/search?q=${keyword}`
+    );
+
+    const data = await response.json();
+
+    setSearchResults(data);
+  };
+
   const addStock = async () => {
     if (!symbol || !shares || !cost) return;
 
     // 抓現價
+    const yahooSymbol =
+      market === "TW"
+        ? `${symbol}.TW`
+        : symbol.toUpperCase();
+
     const response = await fetch(
-      `/api/stock?symbol=${symbol.toUpperCase()}`
+      `/api/stock?symbol=${yahooSymbol}`
     );
 
     const data = await response.json();
+
+    console.log("Yahoo Symbol:", yahooSymbol);
+    console.log("Yahoo Data:", data);
 
     // 取得登入 Token
     const token = localStorage.getItem("token");
@@ -103,13 +130,16 @@ export default function Home() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        symbol: symbol.toUpperCase(),
-        market,
-        shares: Number(shares),
-        cost: Number(cost),
-        currentPrice: data.price,
-        userId: decoded.userId,
-      }),
+      symbol: symbol.toUpperCase(),
+      name: selectedStock?.name || null,
+
+      market,
+      shares: Number(shares),
+      cost: Number(cost),
+      currentPrice: data.price,
+
+      userId: decoded.userId,
+    })
     });
 
     // 重新載入持股
@@ -200,9 +230,14 @@ const saveEdit = async () => {
   const refreshPrices = async () => {
   const updatedStocks = await Promise.all(
     stocks.map(async (stock) => {
-      const response = await fetch(
-        `/api/stock?symbol=${stock.symbol}`
-      );
+      const yahooSymbol =
+    stock.market === "TW"
+    ? `${stock.symbol}.TW`
+    : stock.symbol;
+
+    const response = await fetch(
+      `/api/stock?symbol=${yahooSymbol}`
+    );
 
       const data = await response.json();
 
@@ -459,14 +494,50 @@ const filteredStocks = stocks.filter(
         </h2>
 
         <div className="flex gap-4 flex-wrap">
-          <input
-            className="bg-zinc-800 p-2 rounded"
-            placeholder="股票代號"
-            value={symbol}
-            onChange={(e) =>
-              setSymbol(e.target.value)
-            }
-          />
+          <div className="relative">
+  <input
+    
+  
+    className="bg-zinc-800 p-2 rounded w-64"
+    placeholder={
+      market === "TW"
+        ? "輸入台股名稱或代號"
+        : "股票代號"
+    }
+    value={symbol}
+    onChange={(e) => {
+      setSymbol(e.target.value);
+
+      if (market === "TW") {
+        searchStocks(e.target.value);
+      }
+    }}
+  />
+
+  {market === "TW" &&
+    searchResults.length > 0 && (
+      <div className="absolute top-12 left-0 w-80 bg-zinc-800 rounded shadow-lg z-50">
+        {searchResults.map((stock) => (
+          <div
+            key={stock.id}
+            className="p-2 hover:bg-zinc-700 cursor-pointer"
+            onClick={() => {
+              setSymbol(stock.symbol);
+              setSelectedStock(stock);
+              setSearchResults([]);
+            }}
+          >
+            {stock.symbol} - {stock.name}
+          </div>
+        ))}
+      </div>
+    )}
+</div>
+  {selectedStock && (
+    <div className="mt-2 text-sm text-green-400">
+      {selectedStock.symbol} - {selectedStock.name}
+    </div>
+  )}
 
           <input
             className="bg-zinc-800 p-2 rounded"
@@ -641,8 +712,16 @@ const filteredStocks = stocks.filter(
                   className="border-b border-zinc-800"
                 >
                   <td className="p-3">
+                  <div className="font-semibold">
                     {stock.symbol}
-                  </td>
+                  </div>
+
+                  {stock.name && (
+                    <div className="text-xs text-zinc-400">
+                      {stock.name}
+                    </div>
+                  )}
+                </td>
 
                   <td className="p-3">
                     {editingSymbol === stock.symbol ? (
