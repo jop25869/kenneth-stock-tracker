@@ -685,8 +685,8 @@ const filteredStocks = stocks.filter(
           持股表格
       ========================= */}
       
-      <div className="flex gap-6 items-start">
-        <div className="bg-zinc-900 rounded-xl p-6 shadow-lg w-[50%]">
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <div className="bg-zinc-900 rounded-xl p-6 shadow-lg w-full lg:w-[50%]">
         <div className="overflow-x-auto">
         <table className="w-full min-w-[900px]">
           <thead>
@@ -824,7 +824,7 @@ const filteredStocks = stocks.filter(
         </div>
         </div>
           {/* 圓餅圖區塊 */}
-        <div className="bg-zinc-900 rounded-xl p-6 w-full">
+        <div className="bg-zinc-900 rounded-xl p-6 w-full lg:w-[50%]">
 
           <h2 className="text-xl font-bold mb-4">
             持股比例
