@@ -497,7 +497,7 @@ const filteredStocks = stocks.filter(
           新增持股
         </h2>
 
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex flex-col md:flex-row gap-4">
           <div className="relative">
   <input
     
@@ -686,7 +686,8 @@ const filteredStocks = stocks.filter(
       
       <div className="flex gap-6 items-start">
         <div className="bg-zinc-900 rounded-xl p-6 shadow-lg w-[50%]">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px]">
           <thead>
             <tr className="border-b border-zinc-700">
               <th className="text-left p-3">股票</th>
@@ -819,6 +820,7 @@ const filteredStocks = stocks.filter(
             })}
           </tbody>
         </table>
+        </div>
         </div>
           {/* 圓餅圖區塊 */}
         <div className="bg-zinc-900 rounded-xl p-6 w-[50%]">
