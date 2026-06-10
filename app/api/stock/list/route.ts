@@ -9,12 +9,14 @@ export async function GET(request: Request) {
     searchParams.get("userId")
   );
 
-  const stocks =
-    await prisma.stock.findMany({
-      where: {
-        userId,
-      },
-    });
+  const stocks = await prisma.stock.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      id: "asc",
+    },
+  });
 
   return NextResponse.json(stocks);
 }
