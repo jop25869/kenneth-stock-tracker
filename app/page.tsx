@@ -8,6 +8,7 @@ import {
   Cell,
   Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 
 /* =========================
@@ -588,7 +589,7 @@ const filteredStocks = stocks.filter(
           Dashboard
       ========================= */}
 
-      <div className="grid grid-cols-8 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-6">
         
         <div className="bg-zinc-900 p-4 rounded-xl">
           <div className="text-zinc-400 text-sm">
@@ -823,19 +824,19 @@ const filteredStocks = stocks.filter(
         </div>
         </div>
           {/* 圓餅圖區塊 */}
-        <div className="bg-zinc-900 rounded-xl p-6 w-[50%]">
-                <div className="bg-zinc-900 rounded-xl p-6 w-[50%]">
+        <div className="bg-zinc-900 rounded-xl p-6 w-full">
 
           <h2 className="text-xl font-bold mb-4">
             持股比例
           </h2>
 
-          <PieChart width={700} height={600}>
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
             <Pie
             data={pieData}
             cx="50%"
             cy="50%"
-            outerRadius={250}
+            outerRadius={120}
             dataKey="value"
             fontSize={18}
             label={({ name, percent }) =>
@@ -860,9 +861,10 @@ const filteredStocks = stocks.filter(
 
            
           </PieChart>
+        </ResponsiveContainer>
 
         </div>
-        </div>
+        
       </div>
     </main>
   );
