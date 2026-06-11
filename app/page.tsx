@@ -244,22 +244,41 @@ const moveUp = async (
   const target =
     filteredStocks[index - 1];
 
-  await fetch(
-    "/api/stock/reorder",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-      body: JSON.stringify({
-        currentId,
-        targetId: target.id,
-      }),
-    }
-  );
+  // 立即更新畫面
+  const newStocks = [...stocks];
 
-  await loadStocks();
+  const currentIndex =
+    newStocks.findIndex(
+      (s) => s.id === currentId
+    );
+
+  const targetIndex =
+    newStocks.findIndex(
+      (s) => s.id === target.id
+    );
+
+  [
+    newStocks[currentIndex],
+    newStocks[targetIndex],
+  ] = [
+    newStocks[targetIndex],
+    newStocks[currentIndex],
+  ];
+
+  setStocks(newStocks);
+
+  // 背景同步資料庫
+  fetch("/api/stock/reorder", {
+    method: "POST",
+    headers: {
+      "Content-Type":
+        "application/json",
+    },
+    body: JSON.stringify({
+      currentId,
+      targetId: target.id,
+    }),
+  });
 };
 //移動順序
 const moveDown = async (
@@ -279,22 +298,39 @@ const moveDown = async (
   const target =
     filteredStocks[index + 1];
 
-  await fetch(
-    "/api/stock/reorder",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-      body: JSON.stringify({
-        currentId,
-        targetId: target.id,
-      }),
-    }
-  );
+  const newStocks = [...stocks];
 
-  await loadStocks();
+  const currentIndex =
+    newStocks.findIndex(
+      (s) => s.id === currentId
+    );
+
+  const targetIndex =
+    newStocks.findIndex(
+      (s) => s.id === target.id
+    );
+
+  [
+    newStocks[currentIndex],
+    newStocks[targetIndex],
+  ] = [
+    newStocks[targetIndex],
+    newStocks[currentIndex],
+  ];
+
+  setStocks(newStocks);
+
+  fetch("/api/stock/reorder", {
+    method: "POST",
+    headers: {
+      "Content-Type":
+        "application/json",
+    },
+    body: JSON.stringify({
+      currentId,
+      targetId: target.id,
+    }),
+  });
 };
 
   //更新股價
