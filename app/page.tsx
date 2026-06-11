@@ -793,12 +793,8 @@ const filteredStocks = stocks.filter(
               onClick={() =>
                 setSortMode(!sortMode)
               }
-              className="
-                w-10 h-10
-                rounded-lg
-                bg-zinc-800
-                hover:bg-zinc-700
-              "
+              className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
+
             >
               ☰
             </button>
@@ -980,14 +976,14 @@ const filteredStocks = stocks.filter(
                       {editingSymbol === stock.symbol ? (
                         <button
                           onClick={saveEdit}
-                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
+                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
                         >
-                          Save
+                          💾
                         </button>
                       ) : (
                         <button
                           onClick={() => startEdit(stock)}
-                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
+                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
                         >
                           ✏️
                         </button>
@@ -995,13 +991,8 @@ const filteredStocks = stocks.filter(
 
                       <button
                         onClick={() => deleteStock(stock.symbol)}
-                        className="
-                        w-8 h-8
-                        flex items-center justify-center
-                        rounded-lg
-                        bg-zinc-800
-                        hover:bg-zinc-700
-                        "
+                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
+
                       >
                         ❌
                       </button>
