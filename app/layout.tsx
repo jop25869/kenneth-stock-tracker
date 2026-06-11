@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -13,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stock Tracker",
-  description: "Stock Tracker",
+ title: "Kenneth Stock Tracker",
+  description: "Personal stock portfolio management platform",
 };
 
 export default function RootLayout({
@@ -23,11 +25,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="zh-Hant">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <div className="min-h-screen flex flex-col">
+          <main className="flex-1">
+            {children}
+          </main>
+
+          <footer className="border-t border-zinc-800 py-4 text-center text-xs text-zinc-500">
+            <div className="font-medium">
+              Kenneth Stock Tracker v3.0
+            </div>
+            <div>
+              Designed & Developed by Kenneth Ho
+            </div>
+          </footer>
+        </div>
+      </body>
     </html>
   );
 }
