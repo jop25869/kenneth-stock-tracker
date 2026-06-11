@@ -21,6 +21,8 @@ model Stock {
   symbol       String
   name         String?
 
+  sortOrder    Int     @default(0)
+
   market       String @default("US")
   shares       Float
   cost         Float

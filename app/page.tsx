@@ -230,6 +230,72 @@ const saveEdit = async () => {
 
   setEditingSymbol("");
 };
+//持股排序
+const moveUp = async (
+  currentId: number
+) => {
+  const index =
+    filteredStocks.findIndex(
+      (s) => s.id === currentId
+    );
+
+  if (index <= 0) return;
+
+  const target =
+    filteredStocks[index - 1];
+
+  await fetch(
+    "/api/stock/reorder",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        currentId,
+        targetId: target.id,
+      }),
+    }
+  );
+
+  await loadStocks();
+};
+//移動順序
+const moveDown = async (
+  currentId: number
+) => {
+  const index =
+    filteredStocks.findIndex(
+      (s) => s.id === currentId
+    );
+
+  if (
+    index ===
+    filteredStocks.length - 1
+  )
+    return;
+
+  const target =
+    filteredStocks[index + 1];
+
+  await fetch(
+    "/api/stock/reorder",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        currentId,
+        targetId: target.id,
+      }),
+    }
+  );
+
+  await loadStocks();
+};
 
   //更新股價
   const refreshPrices = async () => {
@@ -686,18 +752,18 @@ const filteredStocks = stocks.filter(
       ========================= */}
       
       <div className="flex flex-col lg:flex-row gap-6 items-start">
-        <div className="bg-zinc-900 rounded-xl p-6 shadow-lg w-full lg:w-[50%]">
+        <div className="bg-zinc-900 rounded-xl p-6 shadow-lg w-full lg:w-[60%]">
         <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px]">
+        <table className="w-full table-fixed">
           <thead>
             <tr className="border-b border-zinc-700">
-              <th className="text-left p-3">股票</th>
-              <th className="text-left p-3">股數</th>
-              <th className="text-left p-3">成本</th>
-              <th className="text-left p-3">現價</th>
-              <th className="text-left p-3">損益</th>
-              <th className="text-left p-3">報酬率</th>
-              <th className="text-left p-3">操作</th>
+              <th className="w-[5%] text-left px-2 py-3">股票</th>
+              <th className="w-[5%] text-center px-2 py-3">股數</th>
+              <th className="w-[5%] text-right px-2 py-3">成本</th>
+              <th className="w-[5%] text-right px-2 py-3">現價</th>
+              <th className="w-[5%] text-right px-2 py-3">損益</th>
+              <th className="w-[5%] text-right px-2 py-3">報酬率</th>
+              <th className="w-[10%] text-center px-2 py-3">操作</th>
             </tr>
           </thead>
 
@@ -714,22 +780,22 @@ const filteredStocks = stocks.filter(
 
               return (
                 <tr
-                  key={stock.symbol}
+                  key={stock.id}
                   className="border-b border-zinc-800"
                 >
-                  <td className="p-3">
+                  <td className="px-2 py-3">
                   <div className="font-semibold">
                     {stock.symbol}
                   </div>
 
                   {stock.name && (
-                    <div className="text-xs text-zinc-400">
+                    <div className="text-xs text-zinc-400 truncate max-w-[180px]">
                       {stock.name}
                     </div>
                   )}
                 </td>
 
-                  <td className="p-3">
+                  <td className="px-2 py-3 text-center">
                     {editingSymbol === stock.symbol ? (
                       <input
                         className="bg-zinc-800 p-1 w-20 rounded"
@@ -745,7 +811,7 @@ const filteredStocks = stocks.filter(
                     )}
                   </td>
 
-                  <td className="p-3">
+                  <td className="px-2 py-3 text-right">
                     {editingSymbol === stock.symbol ? (
                       <input
                         className="bg-zinc-800 p-1 w-24 rounded"
@@ -761,13 +827,13 @@ const filteredStocks = stocks.filter(
                     )}
                   </td>
 
-                  <td className="p-3">
+                  <td className="px-2 py-3 text-right">
                     ${stock.currentPrice}
                   </td>
 
                   
                   <td
-                    className={`p-3 ${
+                    className={`px-2 py-3 text-right ${
                       profit >= 0
                         ? "text-green-400"
                         : "text-red-400"
@@ -776,9 +842,8 @@ const filteredStocks = stocks.filter(
                     ${formatMoney(profit)}
                   </td>
 
-                  
                   <td
-                    className={`p-3 ${
+                    className={`px-2 py-3 text-right ${
                       profitRate >= 0
                         ? "text-green-400"
                         : "text-red-400"
@@ -786,35 +851,54 @@ const filteredStocks = stocks.filter(
                   >
                     {profitRate.toFixed(2)}%
                   </td>
+                  
+                  <td className="px-2 py-3">
+                    <div className="flex items-center justify-center gap-1">
 
-                  <td className="p-3 flex gap-2">
-                    {editingSymbol ===
-                    stock.symbol ? (
                       <button
-                        onClick={saveEdit}
-                        className="bg-blue-600 px-3 py-1 rounded"
+                        onClick={() => moveUp(stock.id)}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
                       >
-                        儲存
+                        ↑
                       </button>
-                    ) : (
-                      <button
-                        onClick={() =>
-                          startEdit(stock)
-                        }
-                        className="bg-yellow-600 px-3 py-1 rounded"
-                      >
-                        編輯
-                      </button>
-                    )}
 
-                    <button
-                      onClick={() =>
-                        deleteStock(stock.symbol)
-                      }
-                      className="bg-red-600 px-3 py-1 rounded"
-                    >
-                      刪除
-                    </button>
+                      <button
+                        onClick={() => moveDown(stock.id)}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
+                      >
+                        ↓
+                      </button>
+
+                      {editingSymbol === stock.symbol ? (
+                        <button
+                          onClick={saveEdit}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => startEdit(stock)}
+                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
+                        >
+                          ✏️
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => deleteStock(stock.symbol)}
+                        className="
+                        w-8 h-8
+                        flex items-center justify-center
+                        rounded-lg
+                        bg-zinc-800
+                        hover:bg-zinc-700
+                        "
+                      >
+                        ❌
+                      </button>
+
+                    </div>
                   </td>
                 </tr>
               );
@@ -824,7 +908,7 @@ const filteredStocks = stocks.filter(
         </div>
         </div>
           {/* 圓餅圖區塊 */}
-        <div className="bg-zinc-900 rounded-xl p-6 w-full lg:w-[50%]">
+        <div className="bg-zinc-900 rounded-xl p-6 w-full lg:w-[40%]">
 
           <h2 className="text-xl font-bold mb-4">
             持股比例
@@ -836,7 +920,7 @@ const filteredStocks = stocks.filter(
             data={pieData}
             cx="50%"
             cy="50%"
-            outerRadius={120}
+            outerRadius={160}
             dataKey="value"
             fontSize={18}
             label={({ name, percent }) =>

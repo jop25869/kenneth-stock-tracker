@@ -14,8 +14,8 @@ export async function GET(request: Request) {
       userId,
     },
     orderBy: {
-      id: "asc",
-    },
+    sortOrder: "asc",
+}
   });
 
   return NextResponse.json(stocks);
