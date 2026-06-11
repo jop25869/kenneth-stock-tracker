@@ -531,60 +531,66 @@ const filteredStocks = stocks.filter(
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-10">
 
-      <div className="flex items-center mb-8">
+      {/* Header */}
+<div className="flex items-start justify-between mb-8">
 
-      {/* 左邊 Logo */}
-      <h1 className="text-5xl font-bold">
-        📈 Stock Tracker
-      </h1>
+  {/* 左邊 Logo */}
+  <h1 className="text-5xl font-bold">
+    📈 Stock Tracker
+  </h1>
 
-      {/* 中間切換 */}
-      <div className="flex-1 flex justify-center">
-        <div className="flex bg-zinc-800 rounded-xl p-1 gap-1">
+  {/* 中間切換 */}
+  <div className="flex flex-col items-center">
 
-          <button
-            onClick={() => setMarket("US")}
-            className={`px-6 py-2 rounded-lg ${
-              market === "US"
-                ? "bg-blue-600 text-white"
-                : "hover:bg-zinc-700"
-            }`}
-          >
-            🇺🇸 美股
-          </button>
+    <img
+      src={market === "US"
+        ? "/flags/us.png"
+        : "/flags/tw.png"}
+      alt="flag"
+      className="w-12 h-8 rounded mb-2"
+    />
 
-          <button
-            onClick={() => setMarket("TW")}
-            className={`px-6 py-2 rounded-lg ${
-              market === "TW"
-                ? "bg-blue-600 text-white"
-                : "hover:bg-zinc-700"
-            }`}
-          >
-            🇹🇼 台股
-          </button>
+    <div className="flex bg-zinc-800 rounded-xl p-1">
+      <button
+        onClick={() => setMarket("US")}
+        className={`px-6 py-2 rounded-lg transition ${
+          market === "US"
+            ? "bg-blue-600"
+            : ""
+        }`}
+      >
+        US 美股
+      </button>
 
-        </div>
-      </div>
-
-        
-
-
-      {/* 右邊帳號 */}
-      <div className="flex items-center gap-4">
-        <span className="text-zinc-400">
-          👤 {userEmail}
-        </span>
-
-        <button
-          onClick={logout}
-          className="bg-red-600 px-4 py-2 rounded hover:bg-red-500"
-        >
-          登出
-        </button>
-      </div>
-
+      <button
+        onClick={() => setMarket("TW")}
+        className={`px-6 py-2 rounded-lg transition ${
+          market === "TW"
+            ? "bg-blue-600"
+            : ""
+        }`}
+      >
+        TW 台股
+      </button>
     </div>
+
+  </div>
+
+  {/* 右邊帳號 */}
+  <div className="flex items-center gap-4">
+    <span className="text-zinc-400">
+      👤 {userEmail}
+    </span>
+
+    <button
+      onClick={logout}
+      className="bg-red-600 px-4 py-2 rounded hover:bg-red-500"
+    >
+      登出
+    </button>
+  </div>
+
+</div>
 
       
 
