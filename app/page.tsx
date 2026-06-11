@@ -1,6 +1,20 @@
 "use client";
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
+
+import SortableRow from "@/components/SortableRow";
+import {
+  DndContext,
+  closestCenter,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+
+
 //圓餅圖
 import {
   PieChart,
@@ -24,6 +38,7 @@ type Stock = {
   shares: number;
   cost: number;
   currentPrice: number;
+  changePercent?: number;
 };
 
 type TokenPayload = {
@@ -61,8 +76,30 @@ export default function Home() {
   //顯示目前登入帳號
   const [userEmail, setUserEmail] =useState("");
 
+  //拖曳
+  const [sortMode, setSortMode] = useState(false);
+
   //台股美股切換
   const [market, setMarket] = useState("US");
+
+  //台美股漲跌顏色
+  const getColorClass = (
+  value: number,
+  symbol: string
+) => {
+  const isTaiwanStock =
+    /^\d{4}$/.test(symbol);
+
+  if (isTaiwanStock) {
+    return value >= 0
+      ? "text-red-400"
+      : "text-green-400";
+  }
+
+  return value >= 0
+    ? "text-green-400"
+    : "text-red-400";
+};
 
   /* =========================
      工具函式
@@ -142,6 +179,8 @@ const searchStocks = async (
       shares: Number(shares),
       cost: Number(cost),
       currentPrice: data.price,
+      changePercent:
+        data.changePercent,
 
       userId: decoded.userId,
     })
@@ -230,107 +269,60 @@ const saveEdit = async () => {
 
   setEditingSymbol("");
 };
-//持股排序
-const moveUp = async (
-  currentId: number
+
+const handleDragEnd = async (
+  event: any
 ) => {
-  const index =
-    filteredStocks.findIndex(
-      (s) => s.id === currentId
-    );
+  const { active, over } = event;
 
-  if (index <= 0) return;
+  if (!over) return;
 
-  const target =
-    filteredStocks[index - 1];
-
-  // 立即更新畫面
-  const newStocks = [...stocks];
-
-  const currentIndex =
-    newStocks.findIndex(
-      (s) => s.id === currentId
-    );
-
-  const targetIndex =
-    newStocks.findIndex(
-      (s) => s.id === target.id
-    );
-
-  [
-    newStocks[currentIndex],
-    newStocks[targetIndex],
-  ] = [
-    newStocks[targetIndex],
-    newStocks[currentIndex],
-  ];
-
-  setStocks(newStocks);
-
-  // 背景同步資料庫
-  fetch("/api/stock/reorder", {
-    method: "POST",
-    headers: {
-      "Content-Type":
-        "application/json",
-    },
-    body: JSON.stringify({
-      currentId,
-      targetId: target.id,
-    }),
-  });
-};
-//移動順序
-const moveDown = async (
-  currentId: number
-) => {
-  const index =
-    filteredStocks.findIndex(
-      (s) => s.id === currentId
-    );
-
-  if (
-    index ===
-    filteredStocks.length - 1
-  )
+  if (active.id === over.id)
     return;
 
-  const target =
-    filteredStocks[index + 1];
-
-  const newStocks = [...stocks];
-
-  const currentIndex =
-    newStocks.findIndex(
-      (s) => s.id === currentId
+  const oldIndex =
+    stocks.findIndex(
+      (s) => s.id === active.id
     );
 
-  const targetIndex =
-    newStocks.findIndex(
-      (s) => s.id === target.id
+  const newIndex =
+    stocks.findIndex(
+      (s) => s.id === over.id
     );
 
-  [
-    newStocks[currentIndex],
-    newStocks[targetIndex],
-  ] = [
-    newStocks[targetIndex],
-    newStocks[currentIndex],
-  ];
+        const newStocks = arrayMove(
+        stocks,
+        oldIndex,
+        newIndex
+      );
 
-  setStocks(newStocks);
+      setStocks(newStocks);
 
-  fetch("/api/stock/reorder", {
-    method: "POST",
-    headers: {
-      "Content-Type":
-        "application/json",
-    },
-    body: JSON.stringify({
-      currentId,
-      targetId: target.id,
-    }),
-  });
+      try {
+        await fetch(
+          "/api/stock/reorder-all",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify(
+              newStocks.map(
+                (
+                  stock,
+                  index
+                ) => ({
+                  id: stock.id,
+                  sortOrder: index,
+                })
+              )
+            ),
+          }
+        );
+      } catch (error) {
+        console.error(error);
+      }
 };
 
   //更新股價
@@ -351,6 +343,8 @@ const moveDown = async (
       return {
         ...stock,
         currentPrice: data.price,
+        changePercent:
+          data.changePercent,
       };
     })
   );
@@ -789,14 +783,52 @@ const filteredStocks = stocks.filter(
       
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         <div className="bg-zinc-900 rounded-xl p-6 shadow-lg w-full lg:w-[60%]">
+
+          <div className="flex justify-between mb-3">
+
+            <button
+              onClick={() =>
+                setSortMode(!sortMode)
+              }
+              className="
+                w-10 h-10
+                rounded-lg
+                bg-zinc-800
+                hover:bg-zinc-700
+              "
+            >
+              ☰
+            </button>
+
+          </div>
+
         <div className="overflow-x-auto">
-        <table className="w-full table-fixed">
+        
+          <DndContext
+            collisionDetection={
+              closestCenter
+            }
+            onDragEnd={
+              handleDragEnd
+            }
+          >
+          <SortableContext
+            items={stocks.map(
+              (s) => s.id
+            )}
+            strategy={
+              verticalListSortingStrategy
+            }
+          >
+
+            <table className="w-full table-fixed">
           <thead>
             <tr className="border-b border-zinc-700">
-              <th className="w-[5%] text-left px-2 py-3">股票</th>
+              <th className="w-[8%] text-left px-2 py-3">股票</th>
               <th className="w-[5%] text-center px-2 py-3">股數</th>
               <th className="w-[5%] text-right px-2 py-3">成本</th>
               <th className="w-[5%] text-right px-2 py-3">現價</th>
+              <th className="w-[5%] text-right px-2 py-3">漲幅</th>
               <th className="w-[5%] text-right px-2 py-3">損益</th>
               <th className="w-[5%] text-right px-2 py-3">報酬率</th>
               <th className="w-[10%] text-center px-2 py-3">操作</th>
@@ -815,21 +847,40 @@ const filteredStocks = stocks.filter(
                 100;
 
               return (
-                <tr
+                <SortableRow
                   key={stock.id}
-                  className="border-b border-zinc-800"
+                  id={stock.id}
+                  enabled={sortMode}
                 >
+                  
                   <td className="px-2 py-3">
-                  <div className="font-semibold">
-                    {stock.symbol}
-                  </div>
+                    <div className="flex items-center gap-2">
 
-                  {stock.name && (
-                    <div className="text-xs text-zinc-400 truncate max-w-[180px]">
-                      {stock.name}
+                      {sortMode && (
+                        
+                          <span
+                            className="
+                              text-zinc-500
+                              select-none
+                            "
+                          >
+                            ☰
+                          </span>
+                        )}
+                      <div>
+                        <div className="font-semibold">
+                          {stock.symbol}
+                        </div>
+
+                        {stock.name && (
+                          <div className="text-xs text-zinc-400 truncate max-w-[180px]">
+                            {stock.name}
+                          </div>
+                        )}
+                      </div>
+
                     </div>
-                  )}
-                </td>
+                  </td>
 
                   <td className="px-2 py-3 text-center">
                     {editingSymbol === stock.symbol ? (
@@ -889,23 +940,31 @@ const filteredStocks = stocks.filter(
                     ${stock.currentPrice}
                   </td>
 
+                  <td
+                      className={`px-2 py-3 text-right ${getColorClass(
+                        stock.changePercent ?? 0,
+                        stock.symbol
+                      )}`}
+                    >
+                      {(stock.changePercent ?? 0).toFixed(2)}%
+                    </td>
                   
                   <td
                     className={`px-2 py-3 text-right ${
-                      profit >= 0
-                        ? "text-green-400"
-                        : "text-red-400"
+                      getColorClass(
+                        profit,
+                        stock.symbol
+                      )
                     }`}
                   >
                     ${formatMoney(profit)}
                   </td>
 
-                  <td
-                    className={`px-2 py-3 text-right ${
-                      profitRate >= 0
-                        ? "text-green-400"
-                        : "text-red-400"
-                    }`}
+                 <td
+                    className={`px-2 py-3 text-right ${getColorClass(
+                      profitRate,
+                      stock.symbol
+                    )}`}
                   >
                     {profitRate.toFixed(2)}%
                   </td>
@@ -913,19 +972,7 @@ const filteredStocks = stocks.filter(
                   <td className="px-2 py-3">
                     <div className="flex items-center justify-center gap-1">
 
-                      <button
-                        onClick={() => moveUp(stock.id)}
-                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
-                      >
-                        ↑
-                      </button>
-
-                      <button
-                        onClick={() => moveDown(stock.id)}
-                        className="w-7 h-7 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700"
-                      >
-                        ↓
-                      </button>
+                      
 
                       {editingSymbol === stock.symbol ? (
                         <button
@@ -958,11 +1005,13 @@ const filteredStocks = stocks.filter(
 
                     </div>
                   </td>
-                </tr>
+                </SortableRow>
               );
             })}
           </tbody>
         </table>
+          </SortableContext>
+          </DndContext>
         </div>
         </div>
           {/* 圓餅圖區塊 */}

@@ -15,10 +15,30 @@ export async function GET(request: Request) {
 
     console.log("結果:", quote);
 
+    console.log(
+      "changePercent:",
+      quote.regularMarketChangePercent
+    );
+
+    console.log(
+      "change:",
+      quote.regularMarketChange
+    );
+
+    console.log(
+      "漲幅:",
+      quote.regularMarketChangePercent
+    );
+
     return NextResponse.json({
-      symbol: quote.symbol,
-      price: quote.regularMarketPrice,
-    });
+  symbol: quote.symbol,
+  price: quote.regularMarketPrice,
+
+  change: quote.regularMarketChange,
+
+  changePercent:
+    quote.regularMarketChangePercent,
+  });
   } catch (error) {
     console.error("錯誤:", error);
 
