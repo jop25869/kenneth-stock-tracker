@@ -834,7 +834,18 @@ const filteredStocks = stocks.filter(
                   <td className="px-2 py-3 text-center">
                     {editingSymbol === stock.symbol ? (
                       <input
-                        className="bg-zinc-800 p-1 w-20 rounded"
+                        className="
+                        bg-white
+                        text-black
+                        p-1
+                        w-20
+                        rounded-md
+                        border
+                        border-gray-300
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-blue-500
+                      "
                         value={editShares}
                         onChange={(e) =>
                           setEditShares(
@@ -850,7 +861,18 @@ const filteredStocks = stocks.filter(
                   <td className="px-2 py-3 text-right">
                     {editingSymbol === stock.symbol ? (
                       <input
-                        className="bg-zinc-800 p-1 w-24 rounded"
+                        className="
+                        bg-white
+                        text-black
+                        p-1
+                        w-20
+                        rounded-md
+                        border
+                        border-gray-300
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-blue-500
+                      "
                         value={editCost}
                         onChange={(e) =>
                           setEditCost(
