@@ -6,6 +6,11 @@ export async function POST(
 ) {
   const data = await request.json();
 
+  const {
+    changePercent,
+    ...stockData
+  } = data;
+
   const maxOrder =
   await prisma.stock.aggregate({
     _max: {
@@ -16,9 +21,9 @@ export async function POST(
 const stock =
   await prisma.stock.create({
     data: {
-      ...data,
-      sortOrder:
-        (maxOrder._max.sortOrder ?? 0) + 1,
+  ...stockData,
+  sortOrder:
+    (maxOrder._max.sortOrder ?? 0) + 1,
     },
   });
 
