@@ -514,7 +514,7 @@ const filteredStocks = stocks.filter(
     (b.currentPrice - b.cost) * b.shares
   )[0];
   
-  if (!pricesLoaded) {
+  /*if (!pricesLoaded) {
   return (
     <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
       <div className="text-2xl font-bold">
@@ -522,7 +522,7 @@ const filteredStocks = stocks.filter(
       </div>
     </main>
     );
-  }
+  }*?
 
   /* =========================
      JSX 畫面

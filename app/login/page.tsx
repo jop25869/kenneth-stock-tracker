@@ -1,27 +1,20 @@
 "use client";
-import { useEffect } from "react";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-
 export default function LoginPage() {
-
   useEffect(() => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  if (token) {
-    try {
-      JSON.parse(atob(token.split(".")[1]));
+    if (token) {
       window.location.href = "/";
-    } catch {
-      localStorage.removeItem("token");
     }
-  }
-}, []);
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] =useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function login() {
     const res = await fetch("/api/login", {
@@ -37,8 +30,8 @@ export default function LoginPage() {
 
     const data = await res.json();
 
-        if (!res.ok) {
-      alert(data.error || "帳號或密碼錯誤");
+    if (!res.ok) {
+      alert(data.error || "登入失敗");
       return;
     }
 
@@ -52,64 +45,115 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex justify-center items-center">
-      <div className="bg-zinc-900 p-10 rounded-xl w-[450px]">
-        <h1 className="text-4xl font-bold mb-8">
-          登入
+    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-slate-950 to-zinc-900 relative overflow-hidden">
+      {/* Header */}
+      <div className="p-8">
+        <h1 className="text-4xl font-bold">
+          📈 Kenneth Stock Tracker
         </h1>
 
-        <input
-          className="w-full bg-zinc-800 p-4 rounded mb-4"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <p className="text-zinc-400 mt-2">
+          Personal Portfolio Management
+        </p>
+      </div>
 
-        <input
-          type="password"
-          className="w-full bg-zinc-800 p-4 rounded mb-4"
-          placeholder="密碼"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+      {/* Main */}
+      <div className="flex-1 flex items-center justify-center px-6 pb-10">
+        <div className="w-full max-w-6xl grid md:grid-cols-2 gap-12 items-center">
+          
 
-        {isLoading && (
-          <div className="mb-4 text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+          {/* 左側 */}
+          <div className="hidden md:block">
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-12 shadow-2xl">
 
-            <div className="mt-2 text-blue-400">
-              📈 載入投資組合中...
+              <div className="text-6xl mb-8">
+                📈
+              </div>
+
+              <h2 className="text-4xl font-bold mb-4">
+                掌握你的投資組合
+              </h2>
+
+              <p className="text-lg text-blue-100 mb-10">
+                支援美股與台股，即時更新，
+                輕鬆追蹤你的投資績效。
+              </p>
+
+              <div className="space-y-4 text-lg">
+                <div>🛜美股 台股即時追蹤</div>
+                <div>📊 投資組合分析</div>
+                <div>📈 績效統計 Dashboard</div>
+              </div>
             </div>
           </div>
-        )}
 
-        <button
-          onClick={login}
-          disabled={isLoading}
-          className="w-full bg-blue-600 p-4 rounded disabled:opacity-50"
-        >
-          {isLoading ? "登入中..." : "登入"}
-        </button>
-        <p className="mt-2 text-center">
-          <a
-            href="/forgot-password"
-            className="text-gray-400 hover:text-white"
-          >
-            忘記密碼？
-          </a>
-        </p>
-          <p className="mt-4 text-center">
-            還沒有帳號？
+          {/* 右側登入卡 */}
+          <div className="bg-white text-black rounded-3xl shadow-2xl p-10 max-w-md mx-auto w-full">
 
-            <Link
-              href="/register"
-              className="ml-1 text-blue-500 hover:underline"
+            <h2 className="text-3xl font-bold text-center mb-8">
+              登入
+            </h2>
+
+            <input
+              className="w-full border border-zinc-300 p-4 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <input
+              type="password"
+              className="w-full border border-zinc-300 p-4 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="密碼"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {isLoading && (
+              <div className="mb-4 text-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+
+                <div className="mt-2 text-blue-600">
+                  📈 載入投資組合中...
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={login}
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white p-4 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
             >
-              立即註冊
-            </Link>
-          </p>
-        
+              {isLoading ? "登入中..." : "登入"}
+            </button>
+
+            <p className="mt-4 text-center">
+              <a
+                href="/forgot-password"
+                className="text-zinc-500 hover:text-blue-600"
+              >
+                忘記密碼？
+              </a>
+            </p>
+
+            <p className="mt-6 text-center text-zinc-600">
+              還沒有帳號？
+
+              <Link
+                href="/register"
+                className="ml-2 text-blue-600 hover:underline font-medium"
+              >
+                立即註冊
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
+
+      {/* Footer 
+      <footer className="py-6 text-center text-sm text-zinc-500">
+        Designed & Developed by Kenneth Ho
+      </footer>*/}
     </div>
   );
 }
