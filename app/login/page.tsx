@@ -7,13 +7,17 @@ import Link from "next/link";
 export default function LoginPage() {
 
   useEffect(() => {
-  const token =
-    localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   if (token) {
-    window.location.href = "/";
+    try {
+      JSON.parse(atob(token.split(".")[1]));
+      window.location.href = "/";
+    } catch {
+      localStorage.removeItem("token");
+    }
   }
-  }, []);
+}, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +37,11 @@ export default function LoginPage() {
 
     const data = await res.json();
 
-    if (data.token) {
+        if (!res.ok) {
+      alert(data.error || "帳號或密碼錯誤");
+      return;
+    }
+
     setIsLoading(true);
 
     localStorage.setItem("token", data.token);
@@ -41,9 +49,6 @@ export default function LoginPage() {
     setTimeout(() => {
       window.location.href = "/";
     }, 1000);
-    } else {
-      alert(data.error);
-    }
   }
 
   return (
