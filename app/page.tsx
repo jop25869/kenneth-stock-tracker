@@ -514,6 +514,8 @@ const filteredStocks = stocks.filter(
     (b.currentPrice - b.cost) * b.shares
   )[0];
   
+
+  //正在更新即時股價
   /*if (!pricesLoaded) {
   return (
     <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
@@ -530,6 +532,7 @@ const filteredStocks = stocks.filter(
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-10">
+      
 
       {/* Header */}
 <div className="flex items-start justify-between mb-8">

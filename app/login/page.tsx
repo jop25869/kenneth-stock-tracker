@@ -17,143 +17,241 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function login() {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      alert(data.error || "登入失敗");
-      return;
+      if (!res.ok) {
+        alert(data.error || "登入失敗");
+        return;
+      }
+
+      setIsLoading(true);
+
+      localStorage.setItem("token", data.token);
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+    } catch {
+      alert("登入失敗，請稍後再試");
     }
-
-    setIsLoading(true);
-
-    localStorage.setItem("token", data.token);
-
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 1000);
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-slate-950 to-zinc-900 relative overflow-hidden">
+    <div className="min-h-screen bg-[#F7ECE7] flex flex-col relative overflow-hidden">
+
+      {/* 背景裝飾 */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#EFD2C6]" />
+
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full bg-[#F0D8CC]" />
+
       {/* Header */}
-      <div className="p-8">
-        <h1 className="text-4xl font-bold">
+      <div className="relative z-10 px-8 py-6">
+        <h1 className="text-3xl font-bold text-zinc-900">
           📈 Kenneth Stock Tracker
         </h1>
 
-        <p className="text-zinc-400 mt-2">
+        <p className="text-zinc-600 mt-1">
           Personal Portfolio Management
         </p>
       </div>
 
       {/* Main */}
-      <div className="flex-1 flex items-center justify-center px-6 pb-10">
-        <div className="w-full max-w-6xl grid md:grid-cols-2 gap-12 items-center">
-          
+      <div className="relative z-10 flex-1 flex items-center justify-center px-6 pb-10">
 
-          {/* 左側 */}
-          <div className="hidden md:block">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-12 shadow-2xl">
+        <div className="w-full max-w-7xl grid lg:grid-cols-[1.5fr_1fr] gap-12 items-center">
 
-              <div className="text-6xl mb-8">
-                📈
+          {/* 左側品牌區 */}
+          <div className="hidden lg:block">
+
+            <div className="max-w-xl">
+
+              <div className="inline-flex items-center rounded-full bg-white px-4 py-2 shadow-sm mb-8">
+                <span className="text-sm font-medium text-zinc-700">
+                  Built for Investors
+                </span>
               </div>
 
-              <h2 className="text-4xl font-bold mb-4">
-                掌握你的投資組合
+              <h2 className="text-6xl font-bold leading-tight text-zinc-900">
+                Track.
+                <br />
+                Analyze.
+                <br />
+                Grow.
               </h2>
 
-              <p className="text-lg text-blue-100 mb-10">
-                支援美股與台股，即時更新，
-                輕鬆追蹤你的投資績效。
+              <p className="mt-8 text-xl text-zinc-600 leading-relaxed">
+                Manage your US and Taiwan portfolios with
+                real-time updates, performance analytics,
+                and a dashboard designed for investors.
               </p>
 
-              <div className="space-y-4 text-lg">
-                <div>🛜美股 台股即時追蹤</div>
-                <div>📊 投資組合分析</div>
-                <div>📈 績效統計 Dashboard</div>
+              <div className="mt-12 grid grid-cols-2 gap-5">
+
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="text-3xl mb-2">
+                   <img src="/flags/us.png" alt="US Flag" className="w-12 h-8 rounded mb-2"/>
+                  </div>
+
+                  <div className="font-semibold text-zinc-900">
+                    US Stocks
+                  </div>
+
+                  <div className="text-sm text-zinc-500 mt-1">
+                    Real-time tracking
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="text-3xl mb-2">
+                    <img src="/flags/tw.png" alt="US Flag" className="w-12 h-8 rounded mb-2"/>
+                  </div>
+
+                  <div className="font-semibold text-zinc-900">
+                    Taiwan Stocks
+                  </div>
+
+                  <div className="text-sm text-zinc-500 mt-1">
+                    Name search support
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="text-3xl mb-2">
+                    📊
+                  </div>
+
+                  <div className="font-semibold text-zinc-900">
+                    Dashboard
+                  </div>
+
+                  <div className="text-sm text-zinc-500 mt-1">
+                    Portfolio insights
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="text-3xl mb-2">
+                    📈
+                  </div>
+
+                  <div className="font-semibold text-zinc-900">
+                    Analytics
+                  </div>
+
+                  <div className="text-sm text-zinc-500 mt-1">
+                    Track performance
+                  </div>
+                </div>
+
               </div>
             </div>
+
           </div>
 
           {/* 右側登入卡 */}
-          <div className="bg-white text-black rounded-3xl shadow-2xl p-10 max-w-md mx-auto w-full">
+          <div className="w-full max-w-md mx-auto">
 
-            <h2 className="text-3xl font-bold text-center mb-8">
-              登入
-            </h2>
+            <div className="bg-white rounded-[32px] shadow-2xl p-10">
 
-            <input
-              className="w-full border border-zinc-300 p-4 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+              <h2 className="text-4xl font-bold text-center text-zinc-900 mb-2">
+                Login
+              </h2>
 
-            <input
-              type="password"
-              className="w-full border border-zinc-300 p-4 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="密碼"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+              <p className="text-center text-zinc-500 mb-10">
+                Welcome back to your portfolio
+              </p>
 
-            {isLoading && (
-              <div className="mb-4 text-center">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+                className="w-full border border-zinc-300 rounded-2xl p-4 mb-4 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              />
 
-                <div className="mt-2 text-blue-600">
-                  📈 載入投資組合中...
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                className="w-full border border-zinc-300 rounded-2xl p-4 mb-4 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              />
+
+              {isLoading && (
+                <div className="mb-5 text-center">
+
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-zinc-900 border-t-transparent" />
+
+                  <div className="mt-3 text-zinc-600">
+                    📈 載入投資組合中...
+                  </div>
+
                 </div>
+              )}
+
+              <button
+                onClick={login}
+                disabled={isLoading}
+                className="w-full bg-zinc-900 text-white p-4 rounded-2xl hover:bg-zinc-800 transition disabled:opacity-50 cursor-pointer"
+              >
+                {isLoading
+                  ? "登入中..."
+                  : "登入"}
+              </button>
+
+              <div className="mt-6 text-center">
+
+                <a
+                  href="/forgot-password"
+                  className="text-zinc-500 hover:text-zinc-900"
+                >
+                  忘記密碼？
+                </a>
+
               </div>
-            )}
 
-            <button
-              onClick={login}
-              disabled={isLoading}
-              className="w-full bg-blue-600 text-white p-4 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
-            >
-              {isLoading ? "登入中..." : "登入"}
-            </button>
+              <div className="mt-6 text-center text-zinc-600">
 
-            <p className="mt-4 text-center">
-              <a
-                href="/forgot-password"
-                className="text-zinc-500 hover:text-blue-600"
-              >
-                忘記密碼？
-              </a>
-            </p>
+                還沒有帳號？
 
-            <p className="mt-6 text-center text-zinc-600">
-              還沒有帳號？
+                <Link
+                  href="/register"
+                  className="ml-2 font-semibold text-zinc-900 hover:underline"
+                >
+                  立即註冊
+                </Link>
 
-              <Link
-                href="/register"
-                className="ml-2 text-blue-600 hover:underline font-medium"
-              >
-                立即註冊
-              </Link>
-            </p>
+              </div>
+
+            </div>
+
           </div>
+
         </div>
+
       </div>
 
-      {/* Footer 
-      <footer className="py-6 text-center text-sm text-zinc-500">
-        Designed & Developed by Kenneth Ho
-      </footer>*/}
+      {/* Footer */}
+      <footer className="relative z-10 py-6 text-center text-sm text-zinc-500">
+        © 2026 Kenneth Stock Tracker • Designed & Developed by Kenneth Ho
+      </footer>
+
     </div>
   );
 }
