@@ -538,9 +538,19 @@ const filteredStocks = stocks.filter(
 <div className="flex items-start justify-between mb-8">
 
   {/* 左邊 Logo */}
+ <div>
   <h1 className="text-5xl font-bold">
     📈 Stock Tracker
   </h1>
+
+  <p className="text-zinc-400 mt-2">
+    歡迎回來，{userEmail.split("@")[0]} 👋
+  </p>
+
+  <p className="text-sm text-zinc-500">
+    最後更新：{lastUpdate || "尚未更新"}
+  </p>
+</div>
 
   {/* 中間切換 */}
   <div className="flex flex-col items-center">
@@ -674,7 +684,7 @@ const filteredStocks = stocks.filter(
 
           <button
             onClick={addStock}
-            className="bg-green-600 px-4 py-2 rounded hover:bg-green-500"
+            className="bg-green-600 px-4 py-2 rounded hover:bg-green-500 cursor-pointer"
           >
             新增股票
           </button>
@@ -687,19 +697,21 @@ const filteredStocks = stocks.filter(
           >
             🔄 更新全部股價
           </button>
-          
+
+           {/* 更新股價文字 
           {lastUpdate && (
             <div className="text-zinc-400 text-sm mt-2">
               最後更新：{lastUpdate}
             </div>
-          )}
+          )}*/}
+
       {/* =========================
           Dashboard
       ========================= */}
 
       <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-6">
         
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             總投入
           </div>
@@ -708,7 +720,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             總市值
           </div>
@@ -717,7 +729,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             總損益
           </div>
@@ -732,7 +744,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             總獲利
           </div>
@@ -742,7 +754,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             總虧損
           </div>
@@ -753,7 +765,7 @@ const filteredStocks = stocks.filter(
         </div>
 
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             報酬率
           </div>
@@ -768,7 +780,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             🏆 最佳持股
           </div>
@@ -778,7 +790,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
+        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
           <div className="text-zinc-400 text-sm">
             ⚠️ 最差持股
           </div>
