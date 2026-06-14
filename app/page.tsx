@@ -551,11 +551,10 @@ const filteredStocks = stocks.filter(
   ========================= */
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white p-10">
-      
-
+      <main className="min-h-screen bg-[#F5ECE7] text-zinc-900 p-10">
+        
       {/* Header */}
-<div className="flex items-start justify-between mb-8">
+    <div className="flex items-start justify-between mb-8">
 
   {/* 左邊 Logo */}
  <div>
@@ -563,7 +562,7 @@ const filteredStocks = stocks.filter(
     📈 Stock Tracker
   </h1>
 
-  <p className="text-zinc-400 mt-2">
+  <p className="text-zinc-600 mt-2">
     歡迎回來，{userEmail.split("@")[0]} 👋
   </p>
 
@@ -580,38 +579,38 @@ const filteredStocks = stocks.filter(
         ? "/flags/us.png"
         : "/flags/tw.png"}
       alt="flag"
-      className="w-12 h-8 rounded mb-2"
+      className="w-24 h-14 rounded-md transition-all duration-300"
     />
 
-    <div className="flex bg-zinc-800 rounded-xl p-1">
-      <button
-        onClick={() => setMarket("US")}
-        className={`px-6 py-2 rounded-lg transition ${
-          market === "US"
-            ? "bg-blue-600"
-            : ""
-        }`}
-      >
-        US 美股
-      </button>
+    <div className="flex bg-white rounded-2xl p-1 shadow-md border border-zinc-200">
+  <button
+    onClick={() => setMarket("US")}
+    className={`px-6 py-2 rounded-xl transition-all duration-200 ${
+      market === "US"
+        ? "bg-blue-600 text-white shadow-md"
+        : "text-zinc-700 hover:bg-zinc-100"
+    }`}
+  >
+    US 美股
+  </button>
 
-      <button
-        onClick={() => setMarket("TW")}
-        className={`px-6 py-2 rounded-lg transition ${
-          market === "TW"
-            ? "bg-blue-600"
-            : ""
-        }`}
-      >
-        TW 台股
-      </button>
-    </div>
+  <button
+    onClick={() => setMarket("TW")}
+    className={`px-6 py-2 rounded-xl transition-all duration-200 ${
+      market === "TW"
+        ? "bg-blue-600 text-white shadow-md"
+        : "text-zinc-700 hover:bg-zinc-100"
+    }`}
+  >
+    TW 台股
+  </button>
+</div>
 
   </div>
 
   {/* 右邊帳號 */}
   <div className="flex items-center gap-4">
-    <span className="text-zinc-400">
+    <span className="text-zinc-600">
       👤 {userEmail}
     </span>
 
@@ -631,17 +630,27 @@ const filteredStocks = stocks.filter(
           新增持股
       ========================= */}
 
-      <div className="bg-zinc-900 p-6 rounded-xl mb-6 max-w-4xl">
-        <h2 className="text-xl font-bold mb-4">
+      <div className="bg-white p-6 rounded-3xl mb-6 max-w-4xl shadow-xl border border-zinc-200">
+        <h2 className="text-2xl font-bold mb-4 text-zinc-900">
           新增持股
         </h2>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="relative flex flex-col">
   <input
     
-  
-    className="bg-zinc-800 p-2 rounded w-64"
+    className="
+        bg-zinc-100
+        text-zinc-900
+        border border-zinc-300
+        px-5
+        py-4
+        rounded-2xl
+        w-[320px]
+        focus:outline-none
+        focus:ring-2
+        focus:ring-blue-500
+        "
     placeholder={
       market === "TW"
         ? "輸入台股名稱或代號"
@@ -659,11 +668,11 @@ const filteredStocks = stocks.filter(
 
   {market === "TW" &&
     searchResults.length > 0 && (
-      <div className="absolute top-12 left-0 w-80 bg-zinc-800 rounded shadow-lg z-50">
+      <div className="absolute top-12 left-0 w-80 bg-white rounded-2xl shadow-xl border border-zinc-200 z-50">
         {searchResults.map((stock) => (
           <div
             key={stock.id}
-            className="p-2 hover:bg-zinc-700 cursor-pointer"
+            className="p-3 hover:bg-zinc-100 cursor-pointer"
             onClick={() => {
               setSymbol(stock.symbol);
               setSelectedStock(stock);
@@ -677,13 +686,24 @@ const filteredStocks = stocks.filter(
     )}
 </div>
   {selectedStock && (
-    <div className="mt-2 text-sm text-green-400">
+    <div className="mt-1 text-sm text-emerald-600">
       {selectedStock.symbol} - {selectedStock.name}
     </div>
   )}
 
           <input
-            className="bg-zinc-800 p-2 rounded"
+            className="
+              bg-zinc-100
+              text-zinc-900
+              border border-zinc-300
+              px-5
+              py-4
+              rounded-2xl
+              w-32
+              focus:outline-none
+              focus:ring-2
+              focus:ring-blue-500
+              "
             placeholder="股數"
             type="number"
             value={shares}
@@ -693,7 +713,18 @@ const filteredStocks = stocks.filter(
           />
 
           <input
-            className="bg-zinc-800 p-2 rounded"
+            className="
+              bg-zinc-100
+              text-zinc-900
+              border border-zinc-300
+              px-5
+              py-4
+              rounded-2xl
+              w-40
+              focus:outline-none
+              focus:ring-2
+              focus:ring-blue-500
+              "
             placeholder="成本"
             type="number"
             value={cost}
@@ -704,7 +735,20 @@ const filteredStocks = stocks.filter(
 
           <button
             onClick={addStock}
-            className="bg-green-600 px-4 py-2 rounded hover:bg-green-500 cursor-pointer"
+            className="
+              bg-emerald-600
+              hover:bg-emerald-500
+              text-white
+              font-semibold
+              rounded-2xl
+              px-8
+              py-4
+              min-w-[140px]
+              shadow-md
+              transition
+              whitespace-nowrap
+              self-start md:self-auto
+              "
           >
             新增股票
           </button>
@@ -713,7 +757,17 @@ const filteredStocks = stocks.filter(
           
           <button
             onClick={refreshPrices}
-            className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 mb-4"
+            className="
+              bg-blue-600
+              px-5
+              py-3
+              rounded-xl
+              hover:bg-blue-500
+              text-white
+              font-semibold
+              shadow-md
+              mb-4
+              "
           >
             🔄 更新全部股價
           </button>
@@ -731,8 +785,8 @@ const filteredStocks = stocks.filter(
 
       <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-6">
         
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
-          <div className="text-zinc-400 text-sm">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
+            <div className="text-zinc-400 text-sm">
             總投入
           </div>
           <div className="text-2xl font-bold">
@@ -740,7 +794,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
           <div className="text-zinc-400 text-sm">
             總市值
           </div>
@@ -749,7 +803,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
           <div className="text-zinc-400 text-sm">
             總損益
           </div>
@@ -764,7 +818,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
           <div className="text-zinc-400 text-sm">
             總獲利
           </div>
@@ -774,7 +828,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
           <div className="text-zinc-400 text-sm">
             總虧損
           </div>
@@ -785,7 +839,7 @@ const filteredStocks = stocks.filter(
         </div>
 
 
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
           <div className="text-zinc-400 text-sm">
             報酬率
           </div>
@@ -800,7 +854,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
           <div className="text-zinc-400 text-sm">
             🏆 最佳持股
           </div>
@@ -810,7 +864,7 @@ const filteredStocks = stocks.filter(
           </div>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition">
+        <div className="bg-white p-4 rounded-2xl shadow-md border border-zinc-200">
           <div className="text-zinc-400 text-sm">
             ⚠️ 最差持股
           </div>
@@ -826,7 +880,7 @@ const filteredStocks = stocks.filter(
       ========================= */}
       
       <div className="flex flex-col lg:flex-row gap-6 items-start">
-        <div className="bg-zinc-900 rounded-xl p-6 shadow-lg w-full lg:w-[60%]">
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-zinc-200 w-full lg:w-[60%]">
 
           <div className="flex justify-between mb-3">
 
@@ -834,7 +888,7 @@ const filteredStocks = stocks.filter(
               onClick={() =>
                 setSortMode(!sortMode)
               }
-              className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
+              className="w-10 h-10 flex items-center justify-center rounded bg-zinc-100 hover:bg-zinc-200 text-xl"
 
             >
               ☰
@@ -863,7 +917,7 @@ const filteredStocks = stocks.filter(
 
             <table className="w-full table-fixed">
           <thead>
-            <tr className="border-b border-zinc-700">
+            <tr className="border-b border-zinc-200">
               <th className="w-[8%] text-left px-2 py-3">股票</th>
               <th className="w-[5%] text-center px-2 py-3">股數</th>
               <th className="w-[5%] text-right px-2 py-3">成本</th>
@@ -1017,14 +1071,14 @@ const filteredStocks = stocks.filter(
                       {editingSymbol === stock.symbol ? (
                         <button
                           onClick={saveEdit}
-                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
+                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-100 hover:bg-zinc-100 text-xl"
                         >
                           💾
                         </button>
                       ) : (
                         <button
                           onClick={() => startEdit(stock)}
-                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
+                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-100 hover:bg-zinc-200 text-xl"
                         >
                           ✏️
                         </button>
@@ -1032,7 +1086,7 @@ const filteredStocks = stocks.filter(
 
                       <button
                         onClick={() => deleteStock(stock.symbol)}
-                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 hover:bg-zinc-700 text-xl"
+                          className="w-10 h-10 flex items-center justify-center rounded bg-zinc-100 hover:bg-zinc-200 text-xl"
 
                       >
                         ❌
@@ -1050,7 +1104,7 @@ const filteredStocks = stocks.filter(
         </div>
         </div>
           {/* 圓餅圖區塊 */}
-        <div className="bg-zinc-900 rounded-xl p-6 w-full lg:w-[40%]">
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-zinc-200 w-full lg:w-[40%]">
 
           <h2 className="text-xl font-bold mb-4">
             持股比例
