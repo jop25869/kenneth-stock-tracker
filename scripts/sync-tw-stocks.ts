@@ -3,10 +3,15 @@ import { prisma } from "../lib/prisma";
 const TWSE_URL =
   "https://openapi.twse.com.tw/v1/opendata/t187ap03_L";
 
+const TPEX_URL =
+  "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O";
+
+  //
 async function main() {
-  console.log("開始同步台股...");
+  console.log("開始同步上市...");
 
   const response = await fetch(TWSE_URL);
+  
   const stocks = await response.json();
 
   console.log(`取得 ${stocks.length} 筆資料`);

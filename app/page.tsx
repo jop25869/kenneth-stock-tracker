@@ -25,6 +25,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { LogOut } from "lucide-react";
+
 /* =========================
    股票資料型別
 ========================= */
@@ -81,6 +83,17 @@ export default function Home() {
 
   //台股美股切換
   const [market, setMarket] = useState("US");
+
+  //獲利顏色(正損益)
+  const profitColor =
+  market === "TW"
+    ? "text-red-500"
+    : "text-emerald-500";
+  //獲利顏色(負損益)
+const lossColor =
+  market === "TW"
+    ? "text-emerald-500"
+    : "text-red-500";
 
   //台美股漲跌顏色
   const getColorClass = (
@@ -615,11 +628,23 @@ const filteredStocks = stocks.filter(
     </span>
 
     <button
-      onClick={logout}
-      className="bg-red-600 px-4 py-2 rounded hover:bg-red-500"
-    >
-      登出
-    </button>
+  onClick={logout}
+  className="
+    flex items-center gap-4
+    px-4 py-2
+    bg-zinc-700
+    text-white
+    hover:bg-zinc-800
+    transition
+    w-fit
+  "
+>
+  <LogOut className="w-8 h-8" />
+
+  <span className="text-2xl font-bold">
+    登出
+  </span>
+</button>
   </div>
 
 </div>
@@ -635,7 +660,7 @@ const filteredStocks = stocks.filter(
           新增持股
         </h2>
 
-        <div className="flex flex-wrap items-end gap-4">
+        <div className="flex flex-wrap items-start gap-4">
           <div className="relative flex flex-col">
   <input
     
@@ -657,14 +682,19 @@ const filteredStocks = stocks.filter(
         : "股票代號"
     }
     value={symbol}
-    onChange={(e) => {
-      setSymbol(e.target.value);
+      onChange={(e) => {
+        setSymbol(e.target.value);
 
-      if (market === "TW") {
-        searchStocks(e.target.value);
-      }
-    }}
-  />
+        if (market === "TW") {
+          searchStocks(e.target.value);
+        }
+      }}
+      onBlur={() => {
+        setTimeout(() => {
+          setSearchResults([]);
+        }, 150);
+      }}
+    />
 
   {market === "TW" &&
     searchResults.length > 0 && (
@@ -684,12 +714,13 @@ const filteredStocks = stocks.filter(
         ))}
       </div>
     )}
-</div>
-  {selectedStock && (
+     {selectedStock && (
     <div className="mt-1 text-sm text-emerald-600">
       {selectedStock.symbol} - {selectedStock.name}
     </div>
   )}
+</div>
+ 
 
           <input
             className="
@@ -810,8 +841,8 @@ const filteredStocks = stocks.filter(
           <div
             className={`text-2xl font-bold ${
               totalProfit >= 0
-                ? "text-green-400"
-                : "text-red-400"
+               ? profitColor
+                : lossColor}
             }`}
           >
             ${formatMoney(totalProfit)}
@@ -823,8 +854,14 @@ const filteredStocks = stocks.filter(
             總獲利
           </div>
 
-          <div className="text-2xl font-bold text-green-400">
-              ${formatMoney(totalGain)}
+          <div
+            className={`text-2xl font-bold ${
+              market === "TW"
+                ? "text-red-500"
+                : "text-green-400"
+            }`}
+          >
+            +${formatMoney(totalGain)}
           </div>
         </div>
 
@@ -833,9 +870,15 @@ const filteredStocks = stocks.filter(
             總虧損
           </div>
 
-          <div className="text-2xl font-bold text-red-400">
-            ${formatMoney(totalLoss)}
-          </div>
+          <div
+          className={`text-2xl font-bold ${
+            market === "TW"
+              ? "text-green-500"
+              : "text-red-400"
+          }`}
+        >
+          -${formatMoney(totalLoss)}
+        </div>
         </div>
 
 
@@ -843,13 +886,18 @@ const filteredStocks = stocks.filter(
           <div className="text-zinc-400 text-sm">
             報酬率
           </div>
-          <div
+         <div
             className={`text-2xl font-bold ${
               returnRate >= 0
-                ? "text-green-400"
-                : "text-red-400"
+                ? market === "TW"
+                  ? "text-red-500"
+                  : "text-green-400"
+                : market === "TW"
+                  ? "text-green-500"
+                  : "text-red-400"
             }`}
           >
+            {returnRate >= 0 ? "+" : ""}
             {returnRate.toFixed(2)}%
           </div>
         </div>
