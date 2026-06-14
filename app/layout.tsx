@@ -34,9 +34,9 @@ export default function RootLayout({
             {children}
           </main>
 
-          <footer className="border-t border-zinc-800 py-4 text-center text-xs text-zinc-500">
+          <footer className="bg-[#F7ECE7] border-t border-zinc-800 py-4 text-center text-xs text-zinc-500">
             <div className="font-medium">
-              Kenneth Stock Tracker v3.0
+              Stock Tracker v3.0
             </div>
             <div>
               Designed & Developed by Kenneth Ho
