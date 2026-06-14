@@ -263,19 +263,9 @@ const saveEdit = async () => {
     }),
   });
 
- setStocks((prev) =>
-  prev.map((stock) =>
-    stock.symbol === editingSymbol
-      ? {
-          ...stock,
-          shares: Number(editShares),
-          cost: Number(editCost),
-          currentPrice: data.price,
-          changePercent: data.changePercent,
-        }
-      : stock
-  )
-);
+  await loadStocks();
+
+  setEditingSymbol("");
 };
 
 const handleDragEnd = async (
