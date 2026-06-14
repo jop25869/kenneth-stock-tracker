@@ -27,6 +27,7 @@ model Stock {
   shares       Float
   cost         Float
   currentPrice Float
+  changePercent Float? @default(0)
 
   userId       Int
   user         User @relation(fields: [userId], references: [id])

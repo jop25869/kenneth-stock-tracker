@@ -18,5 +18,8 @@ export async function GET(request: Request) {
 }
   });
 
+console.log(stocks[0]);
+console.log("changePercent =", stocks[0]?.changePercent);
+
   return NextResponse.json(stocks);
 }

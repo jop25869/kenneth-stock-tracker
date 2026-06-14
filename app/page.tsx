@@ -131,7 +131,7 @@ const searchStocks = async (
     );
 
     const data = await response.json();
-
+   
     setSearchResults(data);
   };
 
@@ -172,18 +172,13 @@ const searchStocks = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-      symbol: symbol.toUpperCase(),
-      name: selectedStock?.name || null,
-
-      market,
-      shares: Number(shares),
-      cost: Number(cost),
+      symbol: editingSymbol,
+      shares: Number(editShares),
+      cost: Number(editCost),
       currentPrice: data.price,
-      changePercent:
-        data.changePercent,
-
+      changePercent: data.changePercent,
       userId: decoded.userId,
-    })
+    }),
     });
 
     // 重新載入持股
@@ -235,13 +230,15 @@ const deleteStock = async (
     setEditCost(stock.cost.toString());
   };
 
-  // 儲存編輯
+// 儲存編輯
 const saveEdit = async () => {
   const response = await fetch(
     `/api/stock?symbol=${editingSymbol}`
   );
 
   const data = await response.json();
+
+  console.log("Yahoo 回傳：", data);
 
   const token =
     localStorage.getItem("token");
@@ -261,6 +258,7 @@ const saveEdit = async () => {
       shares: Number(editShares),
       cost: Number(editCost),
       currentPrice: data.price,
+      changePercent: data.changePercent,   // ⭐ 加這行
       userId: decoded.userId,
     }),
   });
@@ -325,35 +323,57 @@ const handleDragEnd = async (
       }
 };
 
-  //更新股價
   const refreshPrices = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) return;
+
+  const decoded =
+    jwtDecode<TokenPayload>(token);
+
   const updatedStocks = await Promise.all(
     stocks.map(async (stock) => {
       const yahooSymbol =
-    stock.market === "TW"
-    ? `${stock.symbol}.TW`
-    : stock.symbol;
+        stock.market === "TW"
+          ? `${stock.symbol}.TW`
+          : stock.symbol;
 
-    const response = await fetch(
-      `/api/stock?symbol=${yahooSymbol}`
-    );
+      const response = await fetch(
+        `/api/stock?symbol=${yahooSymbol}`
+      );
 
       const data = await response.json();
+
+      // ⭐同步更新資料庫
+      await fetch("/api/stock/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          symbol: stock.symbol,
+          shares: stock.shares,
+          cost: stock.cost,
+          currentPrice: data.price,
+          changePercent: data.changePercent,
+          userId: decoded.userId,
+        }),
+      });
 
       return {
         ...stock,
         currentPrice: data.price,
-        changePercent:
-          data.changePercent,
+        changePercent: data.changePercent,
       };
     })
   );
 
   setStocks(updatedStocks);
+
   setLastUpdate(
-  new Date().toLocaleString("zh-TW")
+    new Date().toLocaleString("zh-TW")
   );
-  };
+};
 
 
   /* =========================
