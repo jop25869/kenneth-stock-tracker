@@ -263,9 +263,19 @@ const saveEdit = async () => {
     }),
   });
 
-  await loadStocks();
-
-  setEditingSymbol("");
+ setStocks((prev) =>
+  prev.map((stock) =>
+    stock.symbol === editingSymbol
+      ? {
+          ...stock,
+          shares: Number(editShares),
+          cost: Number(editCost),
+          currentPrice: data.price,
+          changePercent: data.changePercent,
+        }
+      : stock
+  )
+);
 };
 
 const handleDragEnd = async (
