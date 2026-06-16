@@ -3,8 +3,7 @@ import { prisma } from "../lib/prisma";
 const TWSE_URL =
   "https://openapi.twse.com.tw/v1/opendata/t187ap03_L";
 
-const TPEX_URL =
-  "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O";
+
 
   //
 async function main() {

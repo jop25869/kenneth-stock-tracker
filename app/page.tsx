@@ -185,9 +185,9 @@ const searchStocks = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-      symbol: editingSymbol,
-      shares: Number(editShares),
-      cost: Number(editCost),
+      symbol,
+      shares: Number(shares),
+      cost: Number(cost),
       currentPrice: data.price,
       changePercent: data.changePercent,
       userId: decoded.userId,
