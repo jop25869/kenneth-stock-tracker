@@ -8,6 +8,7 @@ export async function POST(request: Request) {
 
   const {
     symbol,
+    name,
     shares,
     cost,
     currentPrice,
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
       userId,
     },
     data: {
+      name,
       shares,
       cost,
       currentPrice,

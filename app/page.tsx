@@ -179,20 +179,45 @@ const searchStocks = async (
       jwtDecode<TokenPayload>(token);
 
     // 寫入資料庫
-    await fetch("/api/stock/create", {
+    const res = await fetch("/api/stock/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-      symbol,
-      shares: Number(shares),
-      cost: Number(cost),
-      currentPrice: data.price,
-      changePercent: data.changePercent,
-      userId: decoded.userId,
-    }),
+        body: JSON.stringify({
+        symbol: yahooSymbol,
+
+        name:
+          market === "TW"
+            ? selectedStock?.name ?? null
+            : data.name ?? null,
+
+        shares: Number(shares),
+
+        cost: Number(cost),
+
+        currentPrice:
+          data.price ?? Number(cost),
+
+        changePercent:
+          data.changePercent ?? 0,
+
+        userId: decoded.userId,
+
+        market,
+      }),
     });
+
+    if (!res.ok) {
+      const err = await res.text();
+
+      console.error("新增失敗：", err);
+
+      alert("新增失敗：" + err);
+
+      return;
+    }
 
     // 重新載入持股
     await loadStocks();
@@ -201,6 +226,7 @@ const searchStocks = async (
     setSymbol("");
     setShares("");
     setCost("");
+    setSelectedStock(null);
   };
 
 //登出
@@ -267,13 +293,22 @@ const saveEdit = async () => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      symbol: editingSymbol,
-      shares: Number(editShares),
-      cost: Number(editCost),
-      currentPrice: data.price,
-      changePercent: data.changePercent,   // ⭐ 加這行
-      userId: decoded.userId,
-    }),
+  symbol: editingSymbol,
+
+  name: data.name ?? null,
+
+  shares: Number(editShares),
+
+  cost: Number(editCost),
+
+  currentPrice:
+    data.price ?? Number(editCost),
+
+  changePercent:
+    data.changePercent ?? 0,
+
+  userId: decoded.userId,
+}),
   });
 
   await loadStocks();
@@ -310,7 +345,7 @@ const handleDragEnd = async (
       setStocks(newStocks);
 
       try {
-        await fetch(
+        const res = await fetch(
           "/api/stock/reorder-all",
           {
             method: "POST",
@@ -320,10 +355,7 @@ const handleDragEnd = async (
             },
             body: JSON.stringify(
               newStocks.map(
-                (
-                  stock,
-                  index
-                ) => ({
+                (stock, index) => ({
                   id: stock.id,
                   sortOrder: index,
                 })
@@ -331,8 +363,21 @@ const handleDragEnd = async (
             ),
           }
         );
+
+        console.log(
+          "reorder status:",
+          res.status
+        );
+
+        console.log(
+          "reorder response:",
+          await res.text()
+        );
       } catch (error) {
-        console.error(error);
+        console.error(
+          "reorder error:",
+          error
+        );
       }
 };
 
@@ -347,9 +392,10 @@ const handleDragEnd = async (
   const updatedStocks = await Promise.all(
     stocks.map(async (stock) => {
       const yahooSymbol =
-        stock.market === "TW"
-          ? `${stock.symbol}.TW`
-          : stock.symbol;
+      stock.market === "TW" &&
+      !stock.symbol.endsWith(".TW")
+        ? `${stock.symbol}.TW`
+        : stock.symbol;
 
       const response = await fetch(
         `/api/stock?symbol=${yahooSymbol}`
@@ -367,16 +413,22 @@ const handleDragEnd = async (
           symbol: stock.symbol,
           shares: stock.shares,
           cost: stock.cost,
-          currentPrice: data.price,
-          changePercent: data.changePercent,
+          currentPrice:
+          data.price ?? stock.cost,
+
+          changePercent:
+          data.changePercent ?? 0,
           userId: decoded.userId,
         }),
       });
 
       return {
         ...stock,
-        currentPrice: data.price,
-        changePercent: data.changePercent,
+        currentPrice:
+          data.price ?? stock.cost,
+
+        changePercent:
+          data.changePercent ?? 0,
       };
     })
   );
@@ -443,6 +495,7 @@ const handleDragEnd = async (
 
   const data = await response.json();
 
+
   setStocks(data);
   };
 
@@ -451,17 +504,22 @@ const handleDragEnd = async (
   ========================= */
 
 const filteredStocks = stocks.filter(
-  (stock) => stock.market === market
-);
+    (stock) => stock.market === market
+  );
 
-  const totalCost = filteredStocks.reduce(
-    (sum, stock) => sum + stock.cost * stock.shares,
+    const totalCost = filteredStocks.reduce(
+    (sum, stock) =>
+      sum +
+      (Number(stock.cost) || 0) *
+      (Number(stock.shares) || 0),
     0
   );
 
   const totalValue = filteredStocks.reduce(
     (sum, stock) =>
-      sum + stock.currentPrice * stock.shares,
+      sum +
+      (Number(stock.currentPrice) || 0) *
+      (Number(stock.shares) || 0),
     0
   );
 
@@ -469,23 +527,25 @@ const filteredStocks = stocks.filter(
 
   //正負損益計算
   const totalGain = filteredStocks.reduce(
-  (sum, stock) => {
-    const profit =
-      (stock.currentPrice - stock.cost) *
-      stock.shares;
+    (sum, stock) => {
+      const profit =
+        ((Number(stock.currentPrice) || 0) -
+          (Number(stock.cost) || 0)) *
+        (Number(stock.shares) || 0);
 
-    return profit > 0
-      ? sum + profit
-      : sum;
-  },
-  0
+      return profit > 0
+        ? sum + profit
+        : sum;
+    },
+    0
   );
 
   const totalLoss = filteredStocks.reduce(
     (sum, stock) => {
       const profit =
-        (stock.currentPrice - stock.cost) *
-        stock.shares;
+        ((Number(stock.currentPrice) || 0) -
+          (Number(stock.cost) || 0)) *
+        (Number(stock.shares) || 0);
 
       return profit < 0
         ? sum + Math.abs(profit)
@@ -493,7 +553,6 @@ const filteredStocks = stocks.filter(
     },
     0
   );
-
   const returnRate =
     totalCost > 0
       ? (totalProfit / totalCost) * 100
@@ -701,17 +760,17 @@ const filteredStocks = stocks.filter(
       <div className="absolute top-12 left-0 w-80 bg-white rounded-2xl shadow-xl border border-zinc-200 z-50">
         {searchResults.map((stock) => (
           <div
-            key={stock.id}
-            className="p-3 hover:bg-zinc-100 cursor-pointer"
+            key={stock.symbol}
             onClick={() => {
               setSymbol(stock.symbol);
-              setSelectedStock(stock);
+              setSelectedStock(stock);   // ← 加這行
               setSearchResults([]);
             }}
           >
-            {stock.symbol} - {stock.name}
+            {stock.symbol} {stock.name}
           </div>
-        ))}
+        ))
+        }
       </div>
     )}
      {selectedStock && (
@@ -1011,7 +1070,11 @@ const filteredStocks = stocks.filter(
                         )}
                       <div>
                         <div className="font-semibold">
-                          {stock.symbol}
+                          {
+                            stock.market === "TW"
+                              ? stock.symbol.replace(".TW", "")
+                              : stock.symbol
+                          }
                         </div>
 
                         {stock.name && (

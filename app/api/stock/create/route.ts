@@ -18,12 +18,37 @@ export async function POST(
     },
   });
 
+let finalData = {
+  ...stockData,
+};
+
+if (
+  stockData.market === "TW"
+) {
+  const twStock =
+    await prisma.taiwanStock.findUnique({
+      where: {
+        symbol: stockData.symbol.replace(
+          ".TW",
+          ""
+        ),
+      },
+    });
+
+  if (twStock) {
+    finalData = {
+      ...finalData,
+      name: twStock.name,
+    };
+  }
+}
+
 const stock =
   await prisma.stock.create({
     data: {
-  ...stockData,
-  sortOrder:
-    (maxOrder._max.sortOrder ?? 0) + 1,
+      ...finalData,
+      sortOrder:
+        (maxOrder._max.sortOrder ?? 0) + 1,
     },
   });
 

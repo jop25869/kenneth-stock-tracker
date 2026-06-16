@@ -14,6 +14,8 @@ export async function GET(request: Request) {
       await yahooFinance.quote(symbol!);
 
     console.log("結果:", quote);
+    console.log("名稱:", quote.longName);
+    console.log("短名稱:", quote.shortName);
 
     console.log(
       "changePercent:",
@@ -31,14 +33,22 @@ export async function GET(request: Request) {
     );
 
     return NextResponse.json({
-  symbol: quote.symbol,
-  price: quote.regularMarketPrice,
+      symbol: quote.symbol,
 
-  change: quote.regularMarketChange,
+      name:
+        quote.longName ??
+        quote.shortName ??
+        null,
 
-  changePercent:
-    quote.regularMarketChangePercent,
-  });
+      price:
+        quote.regularMarketPrice,
+
+      change:
+        quote.regularMarketChange,
+
+      changePercent:
+        quote.regularMarketChangePercent,
+    });
   } catch (error) {
     console.error("錯誤:", error);
 
