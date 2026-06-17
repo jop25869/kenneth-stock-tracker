@@ -96,23 +96,26 @@ const lossColor =
     : "text-red-500";
 
   //台美股漲跌顏色
-  const getColorClass = (
-  value: number,
-  symbol: string
-) => {
-  const isTaiwanStock =
-    /^\d{4}$/.test(symbol);
+    const getColorClass = (
+      value: number,
+      market: string
+    ) => {
+      const isTaiwanStock = [
+        "TW",
+        "TWSE",
+        "TPEx",
+      ].includes(market);
 
-  if (isTaiwanStock) {
-    return value >= 0
-      ? "text-red-400"
-      : "text-green-400";
-  }
+      if (isTaiwanStock) {
+        return value >= 0
+          ? "text-red-400"
+          : "text-green-400";
+      }
 
-  return value >= 0
-    ? "text-green-400"
-    : "text-red-400";
-};
+      return value >= 0
+        ? "text-green-400"
+        : "text-red-400";
+    };
 
   /* =========================
      工具函式
@@ -413,11 +416,11 @@ const handleDragEnd = async (
   const updatedStocks = await Promise.all(
     stocks.map(async (stock) => {
       const yahooSymbol =
-      stock.market === "TW" || stock.market === "TWSE"
-      ? `${stock.symbol}.TW`
-      : stock.market === "TPEx"
-      ? `${stock.symbol}.TWO`
-      : stock.symbol.toUpperCase();
+      ["TW", "TWSE", "ETF"].includes(stock.market)
+        ? `${stock.symbol}.TW`
+        : stock.market === "TPEx"
+        ? `${stock.symbol}.TWO`
+        : stock.symbol.toUpperCase();
 
       const response = await fetch(
         `/api/stock?symbol=${yahooSymbol}`
@@ -526,11 +529,10 @@ const handleDragEnd = async (
   ========================= */
 
   const filteredStocks = stocks.filter((stock) =>
-    market === "TW"
-      ? stock.market === "TW" ||
-        stock.market === "TPEx"
-      : stock.market === market
-  );
+  market === "TW"
+    ? ["TW", "TWSE", "TPEx", "ETF"].includes(stock.market)
+    : stock.market === market
+);
 
     const totalCost = filteredStocks.reduce(
     (sum, stock) =>
@@ -1173,7 +1175,7 @@ const handleDragEnd = async (
                   <td
                       className={`px-2 py-3 text-right ${getColorClass(
                         stock.changePercent ?? 0,
-                        stock.symbol
+                        stock.market
                       )}`}
                     >
                       {(stock.changePercent ?? 0).toFixed(2)}%
@@ -1183,7 +1185,7 @@ const handleDragEnd = async (
                     className={`px-2 py-3 text-right ${
                       getColorClass(
                         profit,
-                        stock.symbol
+                        stock.market
                       )
                     }`}
                   >
@@ -1193,7 +1195,7 @@ const handleDragEnd = async (
                  <td
                     className={`px-2 py-3 text-right ${getColorClass(
                       profitRate,
-                      stock.symbol
+                      stock.market
                     )}`}
                   >
                     {profitRate.toFixed(2)}%
