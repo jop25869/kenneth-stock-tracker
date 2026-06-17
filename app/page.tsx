@@ -153,9 +153,11 @@ const searchStocks = async (
 
     // 抓現價
     const yahooSymbol =
-      market === "TW"
-        ? `${symbol}.TW`
-        : symbol.toUpperCase();
+    market === "TW"
+    ? selectedStock?.market === "TPEx"
+      ? `${symbol}.TWO`
+      : `${symbol}.TW`
+    : symbol.toUpperCase();
 
     const response = await fetch(
       `/api/stock?symbol=${yahooSymbol}`
@@ -177,6 +179,11 @@ const searchStocks = async (
     // 解析 Token
     const decoded =
       jwtDecode<TokenPayload>(token);
+    
+      console.log("market:", market);
+      console.log("selectedStock:", selectedStock);
+      console.log("symbol:", symbol);
+      console.log("yahooSymbol:", yahooSymbol);
 
     // 寫入資料庫
     const res = await fetch("/api/stock/create", {
@@ -186,7 +193,10 @@ const searchStocks = async (
         Authorization: `Bearer ${token}`,
       },
         body: JSON.stringify({
-        symbol: yahooSymbol,
+        symbol:
+          market === "TW"
+            ? symbol
+            : symbol.toUpperCase(),
 
         name:
           market === "TW"
@@ -205,9 +215,16 @@ const searchStocks = async (
 
         userId: decoded.userId,
 
-        market,
+        market:
+        market === "TW"
+          ? selectedStock?.market === "TPEx"
+            ? "TPEx"
+            : "TW"
+          : "US",
       }),
     });
+
+    console.log("create status:", res.status);
 
     if (!res.ok) {
       const err = await res.text();
@@ -218,6 +235,10 @@ const searchStocks = async (
 
       return;
     }
+
+    console.log("新增成功");
+
+
 
     // 重新載入持股
     await loadStocks();
@@ -392,10 +413,11 @@ const handleDragEnd = async (
   const updatedStocks = await Promise.all(
     stocks.map(async (stock) => {
       const yahooSymbol =
-      stock.market === "TW" &&
-      !stock.symbol.endsWith(".TW")
-        ? `${stock.symbol}.TW`
-        : stock.symbol;
+      stock.market === "TW" || stock.market === "TWSE"
+      ? `${stock.symbol}.TW`
+      : stock.market === "TPEx"
+      ? `${stock.symbol}.TWO`
+      : stock.symbol.toUpperCase();
 
       const response = await fetch(
         `/api/stock?symbol=${yahooSymbol}`
@@ -503,8 +525,11 @@ const handleDragEnd = async (
      Dashboard 計算
   ========================= */
 
-const filteredStocks = stocks.filter(
-    (stock) => stock.market === market
+  const filteredStocks = stocks.filter((stock) =>
+    market === "TW"
+      ? stock.market === "TW" ||
+        stock.market === "TPEx"
+      : stock.market === market
   );
 
     const totalCost = filteredStocks.reduce(
